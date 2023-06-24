@@ -11,19 +11,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.mmdub.katalogkopipaktib.ui.theme.KatalogKopiPakTibTheme
+import com.mmdub.katalogkopipaktib.viewmodel.MainViewModel
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             KatalogKopiPakTibTheme {
-                // A surface container using the 'background' color from the theme
+                val mainViewModel = viewModel<MainViewModel>()
+                val navController = rememberNavController()
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Text(text = "Sample use of secret.properties => ${BuildConfig.SECRET_SAMPLE_USE}")
+                    MainNavHost(
+                        navController = navController,
+                        mainViewModel = mainViewModel
+                    )
                 }
             }
         }
