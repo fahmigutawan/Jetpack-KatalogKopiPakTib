@@ -29,6 +29,10 @@ android {
         buildConfigField("String", "SECRET_SAMPLE_USE", secret['SECRET_SAMPLE_USE'])
     }
 
+    buildFeatures{
+        buildConfig true
+    }
+
     buildTypes {
         release {
             minifyEnabled false

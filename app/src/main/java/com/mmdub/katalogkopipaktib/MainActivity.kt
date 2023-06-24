@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    Text(text = "Sample use of secret.properties => ${BuildConfig.SECRET_SAMPLE_USE}")
                 }
             }
         }
