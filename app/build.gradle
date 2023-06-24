@@ -10,6 +10,10 @@ android {
     namespace 'com.mmdub.katalogkopipaktib'
     compileSdk 33
 
+    def secretFile = rootProject.file("secret.properties")
+    def secret = new Properties()
+    secret.load(new FileInputStream(secretFile))
+
     defaultConfig {
         applicationId "com.mmdub.katalogkopipaktib"
         minSdk 24
@@ -21,6 +25,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        buildConfigField("String", "SECRET_SAMPLE_USE", secret['SECRET_SAMPLE_USE'])
     }
 
     buildTypes {
