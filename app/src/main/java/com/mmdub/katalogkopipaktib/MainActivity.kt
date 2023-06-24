@@ -15,9 +15,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.mmdub.katalogkopipaktib.ui.theme.KatalogKopiPakTibTheme
 import com.mmdub.katalogkopipaktib.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,4 +41,5 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@HiltAndroidApp
 class MainApplication:Application()

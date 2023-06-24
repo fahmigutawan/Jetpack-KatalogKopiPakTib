@@ -16,21 +16,66 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = AppColor.Primary40,
+    onPrimary = AppColor.Primary100,
+    primaryContainer = AppColor.Primary90,
+    onPrimaryContainer = AppColor.Primary10,
+    inversePrimary = AppColor.Primary80,
+    secondary = AppColor.Secondary40,
+    onSecondary = AppColor.Secondary100,
+    secondaryContainer = AppColor.Secondary90,
+    onSecondaryContainer = AppColor.Secondary10,
+    tertiary = AppColor.Tertiary40,
+    onTertiary = AppColor.Tertiary100,
+    tertiaryContainer = AppColor.Tertiary90,
+    onTertiaryContainer = AppColor.Tertiary10,
+    surface = AppColor.Neutral99,
+    onSurface = AppColor.Neutral10,
+    surfaceVariant =AppColor.NeutralVariant99,
+    onSurfaceVariant = AppColor.NeutralVariant30,
+    inverseSurface = AppColor.Neutral20,
+    inverseOnSurface = AppColor.Neutral95,
+    error = AppColor.Error40,
+    onError = AppColor.Error100,
+    errorContainer = AppColor.Error90,
+    onErrorContainer = AppColor.Error10,
+    outline = AppColor.NeutralVariant50,
+    outlineVariant = AppColor.NeutralVariant80,
+    scrim = AppColor.Neutral0
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = AppColor.Primary80,
+    onPrimary = AppColor.Primary20,
+    primaryContainer = AppColor.Primary30,
+    onPrimaryContainer = AppColor.Primary90,
+    inversePrimary = AppColor.Primary40,
+    secondary = AppColor.Secondary80,
+    onSecondary = AppColor.Secondary20,
+    secondaryContainer = AppColor.Secondary30,
+    onSecondaryContainer = AppColor.Secondary90,
+    tertiary = AppColor.Tertiary80,
+    onTertiary = AppColor.Tertiary20,
+    tertiaryContainer = AppColor.Tertiary30,
+    onTertiaryContainer = AppColor.Tertiary90,
+    surface = AppColor.Neutral10,
+    onSurface = AppColor.Neutral90,
+    surfaceVariant =AppColor.NeutralVariant10,
+    onSurfaceVariant = AppColor.NeutralVariant80,
+    inverseSurface = AppColor.Neutral90,
+    inverseOnSurface = AppColor.Neutral20,
+    error = AppColor.Error80,
+    onError = AppColor.Error20,
+    errorContainer = AppColor.Error30,
+    onErrorContainer = AppColor.Error90,
+    outline = AppColor.NeutralVariant60,
+    outlineVariant = AppColor.NeutralVariant30,
+    scrim = AppColor.Neutral0
 )
 
 @Composable
 fun KatalogKopiPakTibTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
