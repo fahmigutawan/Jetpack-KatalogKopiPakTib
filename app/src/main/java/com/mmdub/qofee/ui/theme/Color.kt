@@ -1,4 +1,4 @@
-package com.mmdub.katalogkopipaktib.ui.theme
+package com.mmdub.qofee.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

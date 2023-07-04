@@ -1,11 +1,11 @@
-package com.mmdub.katalogkopipaktib
+package com.mmdub.qofee
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.mmdub.katalogkopipaktib.util.NavRoutes
-import com.mmdub.katalogkopipaktib.viewmodel.MainViewModel
+import com.mmdub.qofee.util.NavRoutes
+import com.mmdub.qofee.viewmodel.MainViewModel
 
 @Composable
 fun MainNavHost(

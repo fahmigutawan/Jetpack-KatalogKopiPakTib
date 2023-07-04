@@ -1,7 +1,7 @@
-package com.mmdub.katalogkopipaktib.di
+package com.mmdub.qofee.di
 
 import android.content.Context
-import com.mmdub.katalogkopipaktib.data.datastore.DatastoreSource
+import com.mmdub.qofee.data.datastore.DatastoreSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,4 +1,4 @@
-package com.mmdub.katalogkopipaktib.data.firebase
+package com.mmdub.qofee.data.firebase
 
 import javax.inject.Inject
 

@@ -7,7 +7,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.dagger.hilt.android'
 
 android {
-    namespace 'com.mmdub.katalogkopipaktib'
+    namespace 'com.mmdub.qofee'
     compileSdk 33
 
     def secretFile = rootProject.file("secret.properties")
@@ -15,7 +15,7 @@ android {
     secret.load(new FileInputStream(secretFile))
 
     defaultConfig {
-        applicationId "com.mmdub.katalogkopipaktib"
+        applicationId "com.mmdub.qofee"
         minSdk 24
         targetSdk 33
         versionCode 1

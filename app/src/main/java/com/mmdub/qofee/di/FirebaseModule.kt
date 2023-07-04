@@ -1,6 +1,6 @@
-package com.mmdub.katalogkopipaktib.di
+package com.mmdub.qofee.di
 
-import com.mmdub.katalogkopipaktib.data.firebase.FirebaseSource
+import com.mmdub.qofee.data.firebase.FirebaseSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
