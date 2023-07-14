@@ -8,4 +8,5 @@ class Repository @Inject constructor(
     private val firebaseSource: FirebaseSource,
     private val datastoreSource: DatastoreSource
 ) {
+    fun getAllCategory() = firebaseSource.getAllCategory()
 }

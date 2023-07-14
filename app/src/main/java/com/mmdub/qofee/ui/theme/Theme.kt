@@ -41,7 +41,9 @@ private val DarkColorScheme = darkColorScheme(
     onErrorContainer = AppColor.Error10,
     outline = AppColor.NeutralVariant50,
     outlineVariant = AppColor.NeutralVariant80,
-    scrim = AppColor.Neutral0
+    scrim = AppColor.Neutral0,
+    onBackground = AppColor.Neutral0,
+    background = AppColor.Neutral90
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -70,7 +72,9 @@ private val LightColorScheme = lightColorScheme(
     onErrorContainer = AppColor.Error90,
     outline = AppColor.NeutralVariant60,
     outlineVariant = AppColor.NeutralVariant30,
-    scrim = AppColor.Neutral0
+    scrim = AppColor.Neutral0,
+    onBackground = AppColor.Neutral90,
+    background = AppColor.Neutral0
 )
 
 @Composable
@@ -80,10 +84,10 @@ fun KatalogKopiPakTibTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
