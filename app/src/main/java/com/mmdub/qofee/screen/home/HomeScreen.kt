@@ -1,5 +1,6 @@
 package com.mmdub.qofee.screen.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +43,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,19 +59,10 @@ import com.mmdub.qofee.R
 import com.mmdub.qofee.component.CategoryItem
 import com.mmdub.qofee.component.CoffeeItem
 import com.mmdub.qofee.data.firebase.Resource
+import com.mmdub.qofee.model.response.category.CategoryItem
 import com.mmdub.qofee.ui.theme.AppColor
 import com.mmdub.qofee.util.NavRoutes
 import com.mmdub.qofee.viewmodel.home.HomeViewModel
-
-//dummy
-enum class DummyCategories(
-    val word: String
-) {
-    Robusta("Robusta"),
-    Arabika("Arabika"),
-    Ekselsa("Ekselsa"),
-    Liberia("Liberia")
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,14 +70,53 @@ fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val scrWidth = LocalConfiguration.current.screenWidthDp
     val categoryState = viewModel.categoryState.collectAsState()
+    val defaultCategory = CategoryItem(
+        id = "Semua",
+        word = "Semua"
+    )
+    val gridState = rememberLazyGridState()
+    val shouldLoadNextItem = remember {
+        derivedStateOf {
+            viewModel.coffeeItems.isNotEmpty()
+                    && viewModel.coffeeItems.size % 6 == 0
+                    && gridState
+                .layoutInfo
+                .visibleItemsInfo
+                .lastOrNull()
+                ?.index
+                ?.minus(2) == viewModel.coffeeItems.size - 1
+        }
+    }
 
     LaunchedEffect(key1 = categoryState.value) {
         if (categoryState.value is Resource.Success) {
             categoryState.value.data?.let {
                 if (it.size > 0) {
-                    viewModel.categoryPicked.value = it[0]
+                    viewModel.categoryPicked.value = defaultCategory
                 }
             }
+        }
+    }
+
+    if (viewModel.shouldLoadFirstItem.value) {
+        when (viewModel.categoryPicked.value?.word) {
+            "Semua" -> {
+                LaunchedEffect(key1 = true) {
+                    viewModel.loadAllFirstCoffee()
+                }
+            }
+
+            else -> {
+                LaunchedEffect(key1 = true) {
+                    //Load by Category
+                }
+            }
+        }
+    }
+
+    if(shouldLoadNextItem.value && !viewModel.endOfPage.value){
+        LaunchedEffect(key1 = true){
+            viewModel.loadAllNextCoffee()
         }
     }
 
@@ -90,7 +124,8 @@ fun HomeScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.onPrimary),
-        columns = GridCells.Fixed(2)
+        columns = GridCells.Fixed(2),
+        state = gridState
     ) {
         item(
             span = { GridItemSpan(2) }
@@ -183,12 +218,25 @@ fun HomeScreen(navController: NavController) {
 
                     is Resource.Success -> {
                         categoryState.value.data?.let {
+                            CategoryItem(
+                                word = "Semua",
+                                picked = viewModel.categoryPicked.value == defaultCategory,
+                                onClick = {
+                                    if (viewModel.categoryPicked.value != defaultCategory) {
+                                        viewModel.coffeeItems.clear()
+                                    }
+                                    viewModel.categoryPicked.value = defaultCategory
+                                }
+                            )
                             it.forEach { item ->
                                 item?.let { itemNotNull ->
                                     CategoryItem(
                                         word = itemNotNull.word ?: "",
                                         picked = viewModel.categoryPicked.value == itemNotNull,
                                         onClick = {
+                                            if (viewModel.categoryPicked.value != item) {
+                                                viewModel.coffeeItems.clear()
+                                            }
                                             viewModel.categoryPicked.value = itemNotNull
                                         }
                                     )
@@ -197,18 +245,15 @@ fun HomeScreen(navController: NavController) {
                         }
                     }
                 }
-                DummyCategories.values().forEach {
-
-                }
             }
         }
 
-        items(10) {
+        items(viewModel.coffeeItems){
             CoffeeItem(
                 thumbnailUrl = "",
-                name = "Kopi Robusta Enak",
-                category = "Robusta",
-                price = 25000
+                name = it.name ?: "",
+                category = it.category_id ?: "",
+                price = it.prices?.getOrNull(0) ?: 0
             )
         }
     }

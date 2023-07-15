@@ -9,4 +9,8 @@ class Repository @Inject constructor(
     private val datastoreSource: DatastoreSource
 ) {
     fun getAllCategory() = firebaseSource.getAllCategory()
+
+    fun getFirstAllCoffee() = firebaseSource.getFirstAllCoffee()
+
+    fun getNextAllCoffee(lastId:String) = firebaseSource.getNextAllCoffee(lastId)
 }
