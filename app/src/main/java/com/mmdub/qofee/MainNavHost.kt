@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mmdub.qofee.screen.coffee_detail.CoffeeDetailScreen
 import com.mmdub.qofee.screen.home.HomeScreen
+import com.mmdub.qofee.screen.profile.ProfileScreen
 import com.mmdub.qofee.screen.search.SearchScreen
 import com.mmdub.qofee.screen.splash.SplashScreen
 import com.mmdub.qofee.util.NavRoutes
@@ -43,7 +44,7 @@ fun MainNavHost(
         }
 
         composable(NavRoutes.PROFILE_SCREEN.name){
-
+            ProfileScreen(navController = navController)
         }
 
         composable(

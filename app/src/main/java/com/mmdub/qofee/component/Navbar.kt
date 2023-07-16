@@ -55,6 +55,11 @@ enum class NavbarItem(
         NavRoutes.FAVORITE_SCREEN.name,
         "Favorit",
         Icons.Default.Favorite
+    ),
+    Profile(
+        NavRoutes.PROFILE_SCREEN.name,
+        "Profil",
+        Icons.Default.Person
     )
 }
 
