@@ -63,7 +63,8 @@ fun CoffeeItem(
     thumbnailUrl: String,
     name: String,
     category: String,
-    price: Int
+    price: Int,
+    onClick: () -> Unit
 ) {
     val localDensity = LocalDensity.current
     val itemWidth = remember { mutableStateOf(0.dp) }
@@ -82,9 +83,7 @@ fun CoffeeItem(
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 8.dp
         ),
-        onClick = {
-
-        }
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.padding(10.dp),

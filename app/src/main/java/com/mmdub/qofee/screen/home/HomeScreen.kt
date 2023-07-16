@@ -311,7 +311,10 @@ fun HomeScreen(navController: NavController) {
                 thumbnailUrl = "",
                 name = it.name ?: "",
                 category = it.category ?: "",
-                price = it.prices?.getOrNull(0)?.toInt() ?: 0
+                price = it.prices?.getOrNull(0)?.get("price")?.toInt() ?: 0,
+                onClick = {
+                    navController.navigate("${NavRoutes.COFFEE_DETAIL}/${it.id}")
+                }
             )
         }
 

@@ -1,5 +1,6 @@
 package com.mmdub.qofee.viewmodel.coffee_detail
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mmdub.qofee.data.Repository
@@ -16,6 +17,8 @@ class CoffeeDetailViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
     val coffeeItem = MutableStateFlow<Resource<CoffeeItem>>(Resource.Loading())
+    val pickedGram = mutableStateOf<Long?>(null)
+    val pickedPrice = mutableStateOf<Long?>(null)
 
     fun getCoffeeData(id:String) = viewModelScope.launch {
         repository.getCoffeeByCoffeeId(id).collect{

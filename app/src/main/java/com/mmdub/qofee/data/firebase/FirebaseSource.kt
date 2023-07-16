@@ -1,9 +1,7 @@
 package com.mmdub.qofee.data.firebase
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.mmdub.qofee.model.response.category.CategoryItem
 import com.mmdub.qofee.model.response.coffee.CoffeeItem
@@ -11,7 +9,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FirebaseSource @Inject constructor(
@@ -69,7 +66,7 @@ class FirebaseSource @Inject constructor(
                                         description = doc.get("description").toString(),
                                         category = category?.get("word").toString(),
                                         thumbnail = doc.get("thumbnail").toString(),
-                                        prices = doc.get("prices") as List<Long>
+                                        prices = doc.get("prices") as List<Map<String, Long>>
                                     )
                                 )
 
@@ -123,7 +120,7 @@ class FirebaseSource @Inject constructor(
                                                     description = doc.get("description").toString(),
                                                     category = category?.get("word").toString(),
                                                     thumbnail = doc.get("thumbnail").toString(),
-                                                    prices = doc.get("prices") as List<Long>
+                                                    prices = doc.get("prices") as List<Map<String, Long>>
                                                 )
                                             )
 
@@ -175,7 +172,7 @@ class FirebaseSource @Inject constructor(
                                         description = doc.get("description").toString(),
                                         category = category?.get("word").toString(),
                                         thumbnail = doc.get("thumbnail").toString(),
-                                        prices = doc.get("prices") as List<Long>
+                                        prices = doc.get("prices") as List<Map<String, Long>>
                                     )
                                 )
 
@@ -232,7 +229,7 @@ class FirebaseSource @Inject constructor(
                                                     description = doc.get("description").toString(),
                                                     category = category?.get("word").toString(),
                                                     thumbnail = doc.get("thumbnail").toString(),
-                                                    prices = doc.get("prices") as List<Long>
+                                                    prices = doc.get("prices") as List<Map<String, Long>>
                                                 )
                                             )
 
@@ -281,7 +278,7 @@ class FirebaseSource @Inject constructor(
                                             description = doc.get("description").toString(),
                                             category = doc2.get("word").toString(),
                                             thumbnail = doc.get("thumbnail").toString(),
-                                            prices = doc.get("prices") as List<Long>
+                                            prices = doc.get("prices") as List<Map<String, Long>>
                                         )
                                     )
                                 )

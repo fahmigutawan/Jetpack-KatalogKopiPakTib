@@ -78,7 +78,10 @@ fun ProfileScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Hubungi Kami", color = MaterialTheme.colorScheme.onSurface)
+                            Text(
+                                text = "Hubungi Kami",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                             Icon(
                                 imageVector = Icons.Default.NavigateNext,
                                 contentDescription = "",
@@ -112,7 +115,10 @@ fun ProfileScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Tentang Aplikasi", color = MaterialTheme.colorScheme.onSurface)
+                            Text(
+                                text = "Tentang Aplikasi",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                             Icon(
                                 imageVector = Icons.Default.NavigateNext,
                                 contentDescription = "",
