@@ -38,7 +38,7 @@ class FirebaseSource @Inject constructor(
         awaitClose { listener.remove() }
     }
 
-    fun getFirstAllCoffee(): Flow<Resource<List<CoffeeItem?>>> = callbackFlow {
+    fun getFirstAllCoffee(): Flow<Resource<List<CoffeeItem>>> = callbackFlow {
         trySend(Resource.Loading())
         delay(1500)
         val ref = firestore
@@ -87,7 +87,7 @@ class FirebaseSource @Inject constructor(
 
     fun getNextAllCoffee(
         lastId: String
-    ): Flow<Resource<List<CoffeeItem?>>> = callbackFlow {
+    ): Flow<Resource<List<CoffeeItem>>> = callbackFlow {
         trySend(Resource.Loading())
         delay(1500)
         val listener = firestore
@@ -108,9 +108,9 @@ class FirebaseSource @Inject constructor(
                         value2?.let {
                             val tmp = ArrayList<CoffeeItem>()
 
-                            if(it.documents.isEmpty()){
+                            if (it.documents.isEmpty()) {
                                 trySend(Resource.Success(listOf()))
-                            }else{
+                            } else {
                                 it.documents.forEach { doc ->
                                     firestore
                                         .collection("category")
@@ -142,7 +142,7 @@ class FirebaseSource @Inject constructor(
 
     fun getFirstCoffeeByCategoryId(
         categoryId: String
-    ): Flow<Resource<List<CoffeeItem?>>> = callbackFlow {
+    ): Flow<Resource<List<CoffeeItem>>> = callbackFlow {
         trySend(Resource.Loading())
         delay(1500)
         val ref = firestore
@@ -195,7 +195,7 @@ class FirebaseSource @Inject constructor(
     fun getNextCoffeeByCategory(
         lastId: String,
         categoryId: String
-    ): Flow<Resource<List<CoffeeItem?>>> = callbackFlow {
+    ): Flow<Resource<List<CoffeeItem>>> = callbackFlow {
         trySend(Resource.Loading())
         delay(1500)
         val listener = firestore
@@ -217,9 +217,9 @@ class FirebaseSource @Inject constructor(
                         value2?.let {
                             val tmp = ArrayList<CoffeeItem>()
 
-                            if(it.documents.isEmpty()){
+                            if (it.documents.isEmpty()) {
                                 trySend(Resource.Success(listOf()))
-                            }else{
+                            } else {
                                 it.documents.forEach { doc ->
                                     firestore
                                         .collection("category")
@@ -244,6 +244,50 @@ class FirebaseSource @Inject constructor(
                             }
                         }
                     }
+            }
+
+        awaitClose { listener.remove() }
+    }
+
+    fun getCoffeeByCoffeeId(
+        coffeeId: String
+    ): Flow<Resource<CoffeeItem>> = callbackFlow {
+        trySend(Resource.Loading())
+
+        val listener = firestore
+            .collection("coffee")
+            .document(coffeeId)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    trySend(Resource.Error(error.message ?: "Error"))
+                }
+
+                value?.let { doc ->
+                    firestore
+                        .collection("category")
+                        .document(doc.get("category_id").toString())
+                        .addSnapshotListener { value2, error2 ->
+                            if (error2 != null) {
+                                trySend(Resource.Error(error2.message ?: "Error"))
+                            }
+
+                            value2?.let { doc2 ->
+
+                                trySend(
+                                    Resource.Success(
+                                        CoffeeItem(
+                                            id = doc.get("id").toString(),
+                                            name = doc.get("name").toString(),
+                                            description = doc.get("description").toString(),
+                                            category = doc2.get("word").toString(),
+                                            thumbnail = doc.get("thumbnail").toString(),
+                                            prices = doc.get("prices") as List<Long>
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                }
             }
 
         awaitClose { listener.remove() }

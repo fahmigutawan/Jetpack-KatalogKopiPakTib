@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.mmdub.qofee.screen.coffee_detail.CoffeeDetailScreen
 import com.mmdub.qofee.screen.home.HomeScreen
 import com.mmdub.qofee.screen.search.SearchScreen
 import com.mmdub.qofee.screen.splash.SplashScreen
@@ -57,6 +58,21 @@ fun MainNavHost(
             SearchScreen(
                 keyword = keyword,
                 navController = navController
+            )
+        }
+
+        composable(
+            route = "${NavRoutes.COFFEE_DETAIL.name}/{coffeeId}",
+            arguments = listOf(
+                navArgument("coffeeId"){
+                    type = NavType.StringType
+                }
+            )
+        ){
+            val id = it.arguments?.getString("coffeeId") ?: ""
+            CoffeeDetailScreen(
+                navController = navController,
+                coffeeId = id
             )
         }
     }
