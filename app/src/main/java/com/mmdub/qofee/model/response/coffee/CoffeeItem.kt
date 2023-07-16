@@ -4,7 +4,7 @@ data class CoffeeItem(
     val id:String? = "",
     val name:String? = "",
     val description:String? = "",
-    val category_id:String? = "",
+    val category:String? = "",
     val thumbnail:String? = "",
-    val prices:List<Int>? = listOf()
+    val prices:List<Long>? = listOf()
 )

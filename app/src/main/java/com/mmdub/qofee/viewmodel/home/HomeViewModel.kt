@@ -31,6 +31,8 @@ class HomeViewModel @Inject constructor(
 
     val coffeeItems = mutableStateListOf<CoffeeItem>()
 
+    val bannerUrls = MutableStateFlow<Resource<List<String>>>(Resource.Loading())
+
     fun loadAllFirstCoffee() {
         viewModelScope.launch {
             repository.getFirstAllCoffee().collect {
@@ -46,8 +48,9 @@ class HomeViewModel @Inject constructor(
                     is Resource.Success -> {
                         it.data?.let {
                             coffeeItems.addAll(it.filterNotNull())
-                            pagingState.value = PagingState.Success
                         }
+                        pagingState.value = PagingState.Success
+                        shouldLoadFirstItem.value = false
                     }
                 }
             }
@@ -69,18 +72,79 @@ class HomeViewModel @Inject constructor(
                     is Resource.Success -> {
                         it.data?.let {
                             coffeeItems.addAll(it.filterNotNull())
-                            pagingState.value = PagingState.Success
                         }
+                        pagingState.value = PagingState.Success
+                        shouldLoadFirstItem.value = false
                     }
                 }
             }
         }
     }
 
+    fun loadFirstCoffeeByCategoryId() {
+        viewModelScope.launch {
+            repository.getFirstCoffeeByCategoryId(
+                categoryPicked.value?.id ?: ""
+            ).collect {
+                when (it) {
+                    is Resource.Error -> {
+                        pagingState.value = PagingState.FirstLoadError
+                    }
+
+                    is Resource.Loading -> {
+                        pagingState.value = PagingState.FirstLoad
+                    }
+
+                    is Resource.Success -> {
+                        it.data?.let {
+                            coffeeItems.addAll(it.filterNotNull())
+                        }
+                        pagingState.value = PagingState.Success
+                        shouldLoadFirstItem.value = false
+                    }
+                }
+            }
+        }
+    }
+
+    fun loadNextCoffeeByCategoryId() {
+        viewModelScope.launch {
+            repository.getNextCoffeeByCategoryId(
+                coffeeItems.last().id ?: "",
+                categoryPicked.value?.id ?: ""
+            ).collect {
+                when (it) {
+                    is Resource.Error -> {
+                        pagingState.value = PagingState.NextLoadError
+                    }
+
+                    is Resource.Loading -> {
+                        pagingState.value = PagingState.NextLoad
+                    }
+
+                    is Resource.Success -> {
+                        it.data?.let {
+                            coffeeItems.addAll(it.filterNotNull())
+                        }
+                        pagingState.value = PagingState.Success
+                        shouldLoadFirstItem.value = false
+                    }
+                }
+            }
+        }
+    }
+
+
     init {
         viewModelScope.launch {
             repository.getAllCategory().collect {
                 categoryState.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getAllBannerUrl().collect{
+                bannerUrls.value = it
             }
         }
     }

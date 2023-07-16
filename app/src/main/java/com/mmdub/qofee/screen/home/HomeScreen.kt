@@ -1,6 +1,7 @@
 package com.mmdub.qofee.screen.home
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -20,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,26 +53,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.mmdub.qofee.R
 import com.mmdub.qofee.component.CategoryItem
 import com.mmdub.qofee.component.CoffeeItem
+import com.mmdub.qofee.component.CoffeeItemLoading
+import com.mmdub.qofee.component.rectLoadingModifier
 import com.mmdub.qofee.data.firebase.Resource
+import com.mmdub.qofee.data.paging_util.PagingState
 import com.mmdub.qofee.model.response.category.CategoryItem
 import com.mmdub.qofee.ui.theme.AppColor
 import com.mmdub.qofee.util.NavRoutes
 import com.mmdub.qofee.viewmodel.home.HomeViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val scrWidth = LocalConfiguration.current.screenWidthDp
     val categoryState = viewModel.categoryState.collectAsState()
+    val bannerUrls = viewModel.bannerUrls.collectAsState()
     val defaultCategory = CategoryItem(
         id = "Semua",
         word = "Semua"
@@ -91,7 +100,7 @@ fun HomeScreen(navController: NavController) {
     LaunchedEffect(key1 = categoryState.value) {
         if (categoryState.value is Resource.Success) {
             categoryState.value.data?.let {
-                if (it.size > 0) {
+                if (it.isNotEmpty()) {
                     viewModel.categoryPicked.value = defaultCategory
                 }
             }
@@ -108,15 +117,25 @@ fun HomeScreen(navController: NavController) {
 
             else -> {
                 LaunchedEffect(key1 = true) {
-                    //Load by Category
+                    viewModel.loadFirstCoffeeByCategoryId()
                 }
             }
         }
     }
 
-    if(shouldLoadNextItem.value && !viewModel.endOfPage.value){
-        LaunchedEffect(key1 = true){
-            viewModel.loadAllNextCoffee()
+    if (shouldLoadNextItem.value && !viewModel.endOfPage.value) {
+        when (viewModel.categoryPicked.value?.word) {
+            "Semua" -> {
+                LaunchedEffect(key1 = true) {
+                    viewModel.loadNextCoffeeByCategoryId()
+                }
+            }
+
+            else -> {
+                LaunchedEffect(key1 = true) {
+                    viewModel.loadNextCoffeeByCategoryId()
+                }
+            }
         }
     }
 
@@ -189,14 +208,51 @@ fun HomeScreen(navController: NavController) {
                     )
                 )
 
-                //Banner
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height((scrWidth * 7 / 16).dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(AppColor.Primary95)
-                )
+                when (bannerUrls.value) {
+                    is Resource.Error -> {/*TODO*/
+                    }
+
+                    is Resource.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height((scrWidth * 7 / 16).dp)
+                                .rectLoadingModifier(RoundedCornerShape(12.dp))
+                        )
+                    }
+
+                    is Resource.Success -> {
+                        val state = rememberPagerState {
+                            bannerUrls.value.data?.size ?: 0
+                        }
+                        HorizontalPager(state = state) { index ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height((scrWidth * 7 / 16).dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(AppColor.Neutral60)
+                            ) {
+                                AsyncImage(
+                                    modifier = Modifier.fillMaxSize(),
+                                    model = bannerUrls.value.data?.get(index) ?: "",
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            HorizontalPagerIndicator(
+                                pagerState = state,
+                                pageCount = bannerUrls.value.data?.size ?: 0
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -224,8 +280,9 @@ fun HomeScreen(navController: NavController) {
                                 onClick = {
                                     if (viewModel.categoryPicked.value != defaultCategory) {
                                         viewModel.coffeeItems.clear()
+                                        viewModel.categoryPicked.value = defaultCategory
+                                        viewModel.shouldLoadFirstItem.value = true
                                     }
-                                    viewModel.categoryPicked.value = defaultCategory
                                 }
                             )
                             it.forEach { item ->
@@ -234,10 +291,11 @@ fun HomeScreen(navController: NavController) {
                                         word = itemNotNull.word ?: "",
                                         picked = viewModel.categoryPicked.value == itemNotNull,
                                         onClick = {
-                                            if (viewModel.categoryPicked.value != item) {
+                                            if (viewModel.categoryPicked.value != itemNotNull) {
                                                 viewModel.coffeeItems.clear()
+                                                viewModel.categoryPicked.value = itemNotNull
+                                                viewModel.shouldLoadFirstItem.value = true
                                             }
-                                            viewModel.categoryPicked.value = itemNotNull
                                         }
                                     )
                                 }
@@ -248,13 +306,19 @@ fun HomeScreen(navController: NavController) {
             }
         }
 
-        items(viewModel.coffeeItems){
+        items(viewModel.coffeeItems) {
             CoffeeItem(
                 thumbnailUrl = "",
                 name = it.name ?: "",
-                category = it.category_id ?: "",
-                price = it.prices?.getOrNull(0) ?: 0
+                category = it.category ?: "",
+                price = it.prices?.getOrNull(0)?.toInt() ?: 0
             )
+        }
+
+        if (viewModel.pagingState.value == PagingState.FirstLoad) {
+            items(4) {
+                CoffeeItemLoading()
+            }
         }
     }
 }
