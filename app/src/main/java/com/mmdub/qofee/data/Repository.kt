@@ -12,5 +12,15 @@ class Repository @Inject constructor(
 
     fun getFirstAllCoffee() = firebaseSource.getFirstAllCoffee()
 
-    fun getNextAllCoffee(lastId:String) = firebaseSource.getNextAllCoffee(lastId)
+    fun getNextAllCoffee(lastId: String) = firebaseSource.getNextAllCoffee(lastId)
+
+    fun getFirstCoffeeByCategoryId(categoryId: String) =
+        firebaseSource.getFirstCoffeeByCategoryId(categoryId)
+
+    fun getNextCoffeeByCategoryId(lastId: String, categoryId: String) =
+        firebaseSource.getNextCoffeeByCategory(lastId, categoryId)
+
+    fun getCoffeeByCoffeeId(coffeeId: String) = firebaseSource.getCoffeeByCoffeeId(coffeeId)
+
+    fun getAllBannerUrl() = firebaseSource.getAllBannerUrl()
 }
