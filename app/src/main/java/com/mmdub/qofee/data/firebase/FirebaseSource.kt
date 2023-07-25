@@ -5,6 +5,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.storage.StorageReference
 import com.mmdub.qofee.model.response.category.CategoryItem
 import com.mmdub.qofee.model.response.coffee.CoffeeItem
+import com.mmdub.qofee.model.response.seller.SellerResponse
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -66,7 +67,8 @@ class FirebaseSource @Inject constructor(
                                         description = doc.get("description").toString(),
                                         category = category?.get("word").toString(),
                                         thumbnail = doc.get("thumbnail").toString(),
-                                        prices = doc.get("prices") as List<Map<String, Long>>
+                                        prices = doc.get("prices") as List<Map<String, Long>>,
+                                        admin_uid = doc.get("admin_uid").toString()
                                     )
                                 )
 
@@ -94,7 +96,7 @@ class FirebaseSource @Inject constructor(
                 firestore
                     .collection("coffee")
                     .orderBy("created_at", Query.Direction.ASCENDING)
-                    .startAfter(value)
+                    .startAfter(value?.get("created_at"))
                     .limit(6)
                     .addSnapshotListener { value2, error2 ->
                         if (error2 != null) {
@@ -120,7 +122,8 @@ class FirebaseSource @Inject constructor(
                                                     description = doc.get("description").toString(),
                                                     category = category?.get("word").toString(),
                                                     thumbnail = doc.get("thumbnail").toString(),
-                                                    prices = doc.get("prices") as List<Map<String, Long>>
+                                                    prices = doc.get("prices") as List<Map<String, Long>>,
+                                                    admin_uid = doc.get("admin_uid").toString()
                                                 )
                                             )
 
@@ -172,7 +175,8 @@ class FirebaseSource @Inject constructor(
                                         description = doc.get("description").toString(),
                                         category = category?.get("word").toString(),
                                         thumbnail = doc.get("thumbnail").toString(),
-                                        prices = doc.get("prices") as List<Map<String, Long>>
+                                        prices = doc.get("prices") as List<Map<String, Long>>,
+                                        admin_uid = doc.get("admin_uid").toString()
                                     )
                                 )
 
@@ -203,7 +207,7 @@ class FirebaseSource @Inject constructor(
                     .collection("coffee")
                     .whereEqualTo("category_id", categoryId)
                     .orderBy("created_at", Query.Direction.ASCENDING)
-                    .startAfter(value)
+                    .startAfter(value?.get("created_at"))
                     .limit(6)
                     .addSnapshotListener { value2, error2 ->
                         if (error2 != null) {
@@ -229,7 +233,8 @@ class FirebaseSource @Inject constructor(
                                                     description = doc.get("description").toString(),
                                                     category = category?.get("word").toString(),
                                                     thumbnail = doc.get("thumbnail").toString(),
-                                                    prices = doc.get("prices") as List<Map<String, Long>>
+                                                    prices = doc.get("prices") as List<Map<String, Long>>,
+                                                    admin_uid = doc.get("admin_uid").toString()
                                                 )
                                             )
 
@@ -278,7 +283,8 @@ class FirebaseSource @Inject constructor(
                                             description = doc.get("description").toString(),
                                             category = doc2.get("word").toString(),
                                             thumbnail = doc.get("thumbnail").toString(),
-                                            prices = doc.get("prices") as List<Map<String, Long>>
+                                            prices = doc.get("prices") as List<Map<String, Long>>,
+                                            admin_uid = doc.get("admin_uid").toString()
                                         )
                                     )
                                 )
@@ -313,5 +319,27 @@ class FirebaseSource @Inject constructor(
             }
 
         awaitClose()
+    }
+
+    fun getSellerDetail(
+        uid:String
+    ):Flow<Resource<SellerResponse?>> = callbackFlow {
+        trySend(Resource.Loading())
+
+        val listener = firestore
+            .collection("seller")
+            .document(uid)
+            .addSnapshotListener { value, error ->
+                if(error != null){
+                    trySend(Resource.Error(error.message ?: "Error"))
+                    return@addSnapshotListener
+                }
+
+                value?.let {
+                    trySend(Resource.Success(it.toObject(SellerResponse::class.java)))
+                }
+            }
+
+        awaitClose { listener.remove() }
     }
 }

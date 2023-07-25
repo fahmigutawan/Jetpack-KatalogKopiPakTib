@@ -23,4 +23,6 @@ class Repository @Inject constructor(
     fun getCoffeeByCoffeeId(coffeeId: String) = firebaseSource.getCoffeeByCoffeeId(coffeeId)
 
     fun getAllBannerUrl() = firebaseSource.getAllBannerUrl()
+
+    fun getSellerDetail(uid:String) = firebaseSource.getSellerDetail(uid)
 }

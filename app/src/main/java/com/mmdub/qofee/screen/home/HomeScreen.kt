@@ -88,6 +88,7 @@ fun HomeScreen(navController: NavController) {
         derivedStateOf {
             viewModel.coffeeItems.isNotEmpty()
                     && viewModel.coffeeItems.size % 6 == 0
+                    && !viewModel.endOfPage.value
                     && gridState
                 .layoutInfo
                 .visibleItemsInfo
@@ -95,6 +96,25 @@ fun HomeScreen(navController: NavController) {
                 ?.index
                 ?.minus(2) == viewModel.coffeeItems.size - 1
         }
+    }
+
+    LaunchedEffect(
+        key1 = gridState
+            .layoutInfo
+            .visibleItemsInfo
+            .lastOrNull()
+            ?.index
+    ) {
+        Log.e(
+            "STATE", (
+                    gridState
+                        .layoutInfo
+                        .visibleItemsInfo
+                        .lastOrNull()
+                        ?.index?.minus(2) == viewModel.coffeeItems.size - 1
+                    ).toString()
+        )
+        Log.e("STATE 2", viewModel.endOfPage.value.toString())
     }
 
     LaunchedEffect(key1 = categoryState.value) {
@@ -127,7 +147,7 @@ fun HomeScreen(navController: NavController) {
         when (viewModel.categoryPicked.value?.word) {
             "Semua" -> {
                 LaunchedEffect(key1 = true) {
-                    viewModel.loadNextCoffeeByCategoryId()
+                    viewModel.loadAllNextCoffee()
                 }
             }
 
@@ -308,7 +328,7 @@ fun HomeScreen(navController: NavController) {
 
         items(viewModel.coffeeItems) {
             CoffeeItem(
-                thumbnailUrl = "",
+                thumbnailUrl = it.thumbnail ?: "",
                 name = it.name ?: "",
                 category = it.category ?: "",
                 price = it.prices?.getOrNull(0)?.get("price")?.toInt() ?: 0,

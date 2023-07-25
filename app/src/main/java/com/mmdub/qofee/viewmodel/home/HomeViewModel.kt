@@ -46,8 +46,10 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        it.data?.let {
-                            coffeeItems.addAll(it.filterNotNull())
+                        it.data?.let { list ->
+                            endOfPage.value = list.isEmpty() || list.size < 6
+
+                            coffeeItems.addAll(list)
                         }
                         pagingState.value = PagingState.Success
                         shouldLoadFirstItem.value = false
@@ -70,8 +72,10 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        it.data?.let {
-                            coffeeItems.addAll(it.filterNotNull())
+                        it.data?.let { list ->
+                            endOfPage.value = list.isEmpty() || list.size < 6
+
+                            coffeeItems.addAll(list)
                         }
                         pagingState.value = PagingState.Success
                         shouldLoadFirstItem.value = false
@@ -96,8 +100,10 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        it.data?.let {
-                            coffeeItems.addAll(it.filterNotNull())
+                        it.data?.let { list ->
+                            endOfPage.value = list.isEmpty() || list.size < 6
+
+                            coffeeItems.addAll(list)
                         }
                         pagingState.value = PagingState.Success
                         shouldLoadFirstItem.value = false
@@ -123,8 +129,9 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        it.data?.let {
-                            coffeeItems.addAll(it.filterNotNull())
+                        it.data?.let { list ->
+                            endOfPage.value = list.isEmpty() || list.size < 6
+                            coffeeItems.addAll(list)
                         }
                         pagingState.value = PagingState.Success
                         shouldLoadFirstItem.value = false
@@ -143,7 +150,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            repository.getAllBannerUrl().collect{
+            repository.getAllBannerUrl().collect {
                 bannerUrls.value = it
             }
         }
