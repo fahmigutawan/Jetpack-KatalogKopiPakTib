@@ -247,7 +247,10 @@ fun CoffeeDetailScreen(
                         item {
                             Column {
                                 Text(text = "Ukuran", style = MaterialTheme.typography.titleLarge)
-                                Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                                Row(
+                                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
                                     item.prices?.let {
                                         it.forEachIndexed { index, map ->
                                             OutlinedCard(

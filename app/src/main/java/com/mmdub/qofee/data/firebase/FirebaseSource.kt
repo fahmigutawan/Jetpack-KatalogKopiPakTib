@@ -41,7 +41,7 @@ class FirebaseSource @Inject constructor(
         delay(1500)
         val ref = firestore
             .collection("coffee")
-            .orderBy("created_at", Query.Direction.ASCENDING)
+            .orderBy("created_at", Query.Direction.DESCENDING)
             .limit(6)
 
         val listener = ref.addSnapshotListener { value, error ->
@@ -95,7 +95,7 @@ class FirebaseSource @Inject constructor(
             .addSnapshotListener { value, error ->
                 firestore
                     .collection("coffee")
-                    .orderBy("created_at", Query.Direction.ASCENDING)
+                    .orderBy("created_at", Query.Direction.DESCENDING)
                     .startAfter(value?.get("created_at"))
                     .limit(6)
                     .addSnapshotListener { value2, error2 ->
@@ -148,7 +148,7 @@ class FirebaseSource @Inject constructor(
         val ref = firestore
             .collection("coffee")
             .whereEqualTo("category_id", categoryId)
-            .orderBy("created_at", Query.Direction.ASCENDING)
+            .orderBy("created_at", Query.Direction.DESCENDING)
             .limit(6)
 
         val listener = ref.addSnapshotListener { value, error ->
@@ -206,7 +206,7 @@ class FirebaseSource @Inject constructor(
                 firestore
                     .collection("coffee")
                     .whereEqualTo("category_id", categoryId)
-                    .orderBy("created_at", Query.Direction.ASCENDING)
+                    .orderBy("created_at", Query.Direction.DESCENDING)
                     .startAfter(value?.get("created_at"))
                     .limit(6)
                     .addSnapshotListener { value2, error2 ->
