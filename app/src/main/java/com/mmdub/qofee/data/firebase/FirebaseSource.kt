@@ -299,38 +299,40 @@ class FirebaseSource @Inject constructor(
     fun getAllBannerUrl(): Flow<Resource<List<String>>> = callbackFlow {
         trySend(Resource.Loading())
         delay(1500)
-        storage
-            .child("home-banner")
-            .listAll()
-            .addOnSuccessListener {
-                val tmp = ArrayList<String>()
 
-                it.items.forEach { ref ->
-                    ref.downloadUrl.addOnSuccessListener { url ->
-                        tmp.add(url.toString())
-
-                        if (tmp.size == it.items.size) {
-                            trySend(Resource.Success(tmp))
-                        }
-                    }
+        val listener = firestore
+            .collection("home-banner")
+            .orderBy("created_at", Query.Direction.DESCENDING)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    trySend(Resource.Error(error.message ?: "Error"))
+                    return@addSnapshotListener
                 }
-            }.addOnFailureListener {
-                trySend(Resource.Error(it.message ?: "Error"))
+
+                value?.let {
+                    trySend(
+                        Resource.Success(
+                            it.documents.map { it.get("url").toString() }
+                        )
+                    )
+                }
             }
 
-        awaitClose()
+        awaitClose {
+            listener.remove()
+        }
     }
 
     fun getSellerDetail(
-        uid:String
-    ):Flow<Resource<SellerResponse?>> = callbackFlow {
+        uid: String
+    ): Flow<Resource<SellerResponse?>> = callbackFlow {
         trySend(Resource.Loading())
 
         val listener = firestore
             .collection("seller")
             .document(uid)
             .addSnapshotListener { value, error ->
-                if(error != null){
+                if (error != null) {
                     trySend(Resource.Error(error.message ?: "Error"))
                     return@addSnapshotListener
                 }
