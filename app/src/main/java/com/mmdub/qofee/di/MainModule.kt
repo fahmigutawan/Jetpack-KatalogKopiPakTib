@@ -3,6 +3,7 @@ package com.mmdub.qofee.di
 import com.mmdub.qofee.data.Repository
 import com.mmdub.qofee.data.datastore.DatastoreSource
 import com.mmdub.qofee.data.firebase.FirebaseSource
+import com.mmdub.qofee.data.room.RoomSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +13,8 @@ import javax.inject.Singleton
 @Module(
     includes = [
         DatastoreModule::class,
-        FirebaseModule::class
+        FirebaseModule::class,
+        RoomModule::class
     ]
 )
 @InstallIn(SingletonComponent::class)
@@ -21,9 +23,11 @@ object MainModule {
     @Singleton
     fun provideRepository(
         datastoreSource: DatastoreSource,
-        firebaseSource: FirebaseSource
+        firebaseSource: FirebaseSource,
+        roomSource:RoomSource
     ) = Repository(
         firebaseSource = firebaseSource,
-        datastoreSource = datastoreSource
+        datastoreSource = datastoreSource,
+        roomSource = roomSource
     )
 }

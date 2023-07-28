@@ -28,11 +28,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -42,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -55,6 +58,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -81,6 +86,7 @@ fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val scrWidth = LocalConfiguration.current.screenWidthDp
     val categoryState = viewModel.categoryState.collectAsState()
+    val sellerState = viewModel.sellerState.collectAsState()
     val bannerUrls = viewModel.bannerUrls.collectAsState()
     val gridState = rememberLazyGridState()
     val shouldLoadNextItem = remember {
@@ -144,66 +150,63 @@ fun HomeScreen(navController: NavController) {
                     )
                 }
 
-                ExposedDropdownMenuBox(
-                    expanded = viewModel.showSellerDropdown.value,
-                    onExpandedChange = {
-                        viewModel.showSellerDropdown.value = it
+                Column {
+                    Box {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            value = viewModel.pickedSeller.value?.name ?: "",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = {
+                                Text(text = "Pilih Penjual")
+                            },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                textColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                                focusedLabelColor = MaterialTheme.colorScheme.primary
+                            ),
+                            trailingIcon = {
+                                FilledIconButton(
+                                    onClick = {
+                                        viewModel.showSellerDropdown.value =
+                                            !viewModel.showSellerDropdown.value
+                                    },
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = ""
+                                    )
+                                }
+                            }
+                        )
                     }
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier.clickable {
-                            viewModel.showSellerDropdown.value = !viewModel.showSellerDropdown.value
-                        },
-                        value = viewModel.pickedSeller.value?.name ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = {
-                            Text(text = "Penjual")
-                        }
-                    )
 
-                    ExposedDropdownMenu(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                    DropdownMenu(
                         expanded = viewModel.showSellerDropdown.value,
-                        onDismissRequest = { viewModel.showSellerDropdown.value = false }
+                        onDismissRequest = {
+                            viewModel.showSellerDropdown.value = false
+                        }
                     ) {
-                        DropdownMenuItem(text = { Text(text = "CLICK ME") }, onClick = { /*TODO*/ })
+                        if (sellerState.value is Resource.Success) {
+                            sellerState.value.data?.let {
+                                it.filterNotNull().forEach { item ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = item.name ?: "...") },
+                                        onClick = {
+                                            viewModel.coffeeItems.clear()
+                                            viewModel.pickedSeller.value = item
+                                            viewModel.showSellerDropdown.value = false
+                                            viewModel.shouldLoadFirstItem.value = true
+                                            viewModel.endOfPage.value = false
+                                        },
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
-
-//                OutlinedTextField(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                    value = viewModel.searchState.value,
-//                    onValueChange = {
-//                        viewModel.searchState.value = it
-//                    },
-//                    placeholder = {
-//                        Text(text = "Cari produk kopi...")
-//                    },
-//                    leadingIcon = {
-//                        Icon(imageVector = Icons.Default.Search, contentDescription = "")
-//                    },
-//                    trailingIcon = {
-//                        FilledIconButton(
-//                            colors = IconButtonDefaults.filledIconButtonColors(
-//                                containerColor = MaterialTheme.colorScheme.secondary
-//                            ),
-//                            onClick = {
-//                                if (viewModel.searchState.value.isNotEmpty()) {
-//                                    navController.navigate("${NavRoutes.SEARCH_SCREEN.name}/${viewModel.searchState.value}")
-//                                }
-//                            },
-//                            shape = RoundedCornerShape(12.dp)
-//                        ) {
-//                            Icon(imageVector = Icons.Default.NavigateNext, contentDescription = "")
-//                        }
-//                    },
-//                    shape = RoundedCornerShape(12.dp),
-//                    colors = TextFieldDefaults.outlinedTextFieldColors(
-//                        textColor = MaterialTheme.colorScheme.background
-//                    )
-//                )
 
                 when (bannerUrls.value) {
                     is Resource.Error -> {/*TODO*/

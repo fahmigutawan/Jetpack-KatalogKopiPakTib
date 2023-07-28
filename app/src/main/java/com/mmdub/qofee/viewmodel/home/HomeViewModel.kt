@@ -22,7 +22,6 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
-    val searchState = mutableStateOf("")
     val categoryState = MutableStateFlow<Resource<List<CategoryItem?>>>(Resource.Loading())
     val sellerState = MutableStateFlow<Resource<List<SellerResponse?>>>(Resource.Loading())
     val categoryPicked = mutableStateOf<CategoryItem?>(null)
@@ -39,7 +38,8 @@ class HomeViewModel @Inject constructor(
     fun loadFirstCoffee() {
         viewModelScope.launch {
             repository.getFirstCoffee(
-                category_id = categoryPicked.value?.id ?: ""
+                category_id = categoryPicked.value?.id ?: "",
+                uid = pickedSeller.value?.uid ?: ""
             ).collect {
                 when (it) {
                     is Resource.Error -> {
@@ -67,7 +67,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getNextCoffee(
                 lastId = coffeeItems.last().id ?: "",
-                category_id = categoryPicked.value?.id ?: ""
+                category_id = categoryPicked.value?.id ?: "",
+                uid = pickedSeller.value?.uid ?: ""
             ).collect {
                 when (it) {
                     is Resource.Error -> {

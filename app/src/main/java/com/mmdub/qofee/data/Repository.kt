@@ -2,11 +2,13 @@ package com.mmdub.qofee.data
 
 import com.mmdub.qofee.data.datastore.DatastoreSource
 import com.mmdub.qofee.data.firebase.FirebaseSource
+import com.mmdub.qofee.data.room.RoomSource
 import javax.inject.Inject
 
 class Repository @Inject constructor(
     private val firebaseSource: FirebaseSource,
-    private val datastoreSource: DatastoreSource
+    private val datastoreSource: DatastoreSource,
+    private val roomSource: RoomSource
 ) {
     fun getAllCategory() = firebaseSource.getAllCategory()
 

@@ -259,7 +259,6 @@ class FirebaseSource @Inject constructor(
     fun getAllSeller(): Flow<Resource<List<SellerResponse?>>> = callbackFlow {
         val listener = firestore
             .collection("seller")
-            .orderBy("name", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     trySend(Resource.Error(error.message ?: "Error"))

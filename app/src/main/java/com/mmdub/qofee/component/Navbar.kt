@@ -46,11 +46,11 @@ enum class NavbarItem(
         "Beranda",
         Icons.Default.Home
     ),
-    Catalogue(
-        NavRoutes.CATALOGUE_SCREEN.name,
-        "Katalog",
-        Icons.Default.Book
-    ),
+//    Catalogue(
+//        NavRoutes.CATALOGUE_SCREEN.name,
+//        "Katalog",
+//        Icons.Default.Book
+//    ),
     Favorite(
         NavRoutes.FAVORITE_SCREEN.name,
         "Favorit",
