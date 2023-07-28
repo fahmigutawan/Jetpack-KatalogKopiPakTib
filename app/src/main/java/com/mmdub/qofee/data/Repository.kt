@@ -3,6 +3,7 @@ package com.mmdub.qofee.data
 import com.mmdub.qofee.data.datastore.DatastoreSource
 import com.mmdub.qofee.data.firebase.FirebaseSource
 import com.mmdub.qofee.data.room.RoomSource
+import com.mmdub.qofee.model.entity.FavoriteEntity
 import javax.inject.Inject
 
 class Repository @Inject constructor(
@@ -25,4 +26,12 @@ class Repository @Inject constructor(
     fun getSellerDetail(uid: String) = firebaseSource.getSellerDetail(uid)
 
     fun getAllSeller() = firebaseSource.getAllSeller()
+
+    suspend fun getAllFavorite() = roomSource.getAllFavorite()
+
+    suspend fun getFavoriteById(id:String) = roomSource.getFavoriteById(id)
+
+    suspend fun insertFavorite(favoriteEntity: FavoriteEntity) = roomSource.insertFavorite(favoriteEntity)
+
+    suspend fun deleteFavorite(favoriteEntity: FavoriteEntity) = roomSource.deleteFavorite(favoriteEntity)
 }

@@ -20,7 +20,8 @@ import com.mmdub.qofee.viewmodel.MainViewModel
 fun MainNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    showSnackbar:(String) -> Unit
 ) {
     NavHost(
         modifier = modifier,
@@ -73,7 +74,8 @@ fun MainNavHost(
             val id = it.arguments?.getString("coffeeId") ?: ""
             CoffeeDetailScreen(
                 navController = navController,
-                coffeeId = id
+                coffeeId = id,
+                showSnackbar = showSnackbar
             )
         }
     }

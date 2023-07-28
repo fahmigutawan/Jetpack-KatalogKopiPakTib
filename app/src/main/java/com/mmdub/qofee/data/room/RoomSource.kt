@@ -11,11 +11,11 @@ class RoomSource @Inject constructor(
 ) {
     private val favoriteDao = db.favoriteDao()
 
-    fun getAll() = favoriteDao.getAll()
+    suspend fun getAllFavorite() = favoriteDao.getAll()
 
-    fun getById(id:String) = favoriteDao.getById(id)
+    suspend fun getFavoriteById(id:String) = favoriteDao.getById(id)
 
-    fun insert(favoriteEntity: FavoriteEntity) = favoriteDao.insert(favoriteEntity)
+    suspend fun insertFavorite(favoriteEntity: FavoriteEntity) = favoriteDao.insert(favoriteEntity)
 
-    fun delete(favoriteEntity: FavoriteEntity) = favoriteDao.delete(favoriteEntity)
+    suspend fun deleteFavorite(favoriteEntity: FavoriteEntity) = favoriteDao.delete(favoriteEntity)
 }

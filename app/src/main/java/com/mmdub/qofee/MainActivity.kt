@@ -78,7 +78,8 @@ class MainActivity : ComponentActivity() {
                         MainNavHost(
                             modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
                             navController = navController,
-                            mainViewModel = mainViewModel
+                            mainViewModel = mainViewModel,
+                            showSnackbar =
                         )
                     }
                 }

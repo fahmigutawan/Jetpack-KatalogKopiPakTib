@@ -9,10 +9,10 @@ import com.mmdub.qofee.model.entity.FavoriteEntity
 @Dao
 interface FavoriteDao {
     @Query("SELECT * FROM favorite")
-    fun getAll(): List<FavoriteEntity>
+    suspend fun getAll(): List<FavoriteEntity>
 
     @Query("SELECT * FROM favorite WHERE id=(:id)")
-    fun getById(id:String):List<FavoriteEntity>
+    suspend fun getById(id:String):List<FavoriteEntity>
 
     @Insert
     fun insert(favoriteEntity: FavoriteEntity)

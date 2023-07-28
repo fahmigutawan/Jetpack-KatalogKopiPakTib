@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mmdub.qofee.data.firebase.Resource
+import com.mmdub.qofee.model.entity.FavoriteEntity
 import com.mmdub.qofee.viewmodel.coffee_detail.CoffeeDetailViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -57,7 +59,8 @@ import com.mmdub.qofee.viewmodel.coffee_detail.CoffeeDetailViewModel
 @Composable
 fun CoffeeDetailScreen(
     navController: NavController,
-    coffeeId: String
+    coffeeId: String,
+    showSnackbar:(String) -> Unit
 ) {
     val viewModel = hiltViewModel<CoffeeDetailViewModel>()
     val coffeeItem = viewModel.coffeeItem.collectAsState()
@@ -65,6 +68,11 @@ fun CoffeeDetailScreen(
     val imgWidth = remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     val context = LocalContext.current
+    val isFavorite = remember {
+        derivedStateOf {
+            viewModel.favorite.isNotEmpty()
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.getCoffeeData(coffeeId)
@@ -76,6 +84,10 @@ fun CoffeeDetailScreen(
                 viewModel.getSellerDetail(it.admin_uid ?: "")
             }
         }
+    }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.getFavoriteById(coffeeId)
     }
 
     Scaffold(
@@ -215,10 +227,24 @@ fun CoffeeDetailScreen(
                                     }
 
                                     FilledIconButton(
-                                        onClick = { /*TODO*/ },
+                                        onClick = {
+                                            if (isFavorite.value) {
+                                                viewModel.deleteFavorite(viewModel.favorite.first())
+                                                viewModel.favorite.clear()
+                                            } else {
+                                                val ent = FavoriteEntity(
+                                                    id = item.id ?: "",
+                                                    name = item.name ?: "",
+                                                    category = item.category ?: "",
+                                                    thumbnail = item.thumbnail ?: ""
+                                                )
+                                                viewModel.insertFavorite(ent)
+                                                viewModel.favorite.add(ent)
+                                            }
+                                        },
                                         colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.secondary,
-                                            contentColor = MaterialTheme.colorScheme.onSecondary
+                                            containerColor = if (isFavorite.value) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondaryContainer,
+                                            contentColor = if (isFavorite.value) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSecondaryContainer
                                         ),
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
