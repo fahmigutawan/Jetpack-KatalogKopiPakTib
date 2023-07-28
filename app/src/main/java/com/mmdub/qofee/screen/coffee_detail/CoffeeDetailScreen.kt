@@ -231,15 +231,18 @@ fun CoffeeDetailScreen(
                                             if (isFavorite.value) {
                                                 viewModel.deleteFavorite(viewModel.favorite.first())
                                                 viewModel.favorite.clear()
+                                                showSnackbar("Berhasil dihapus dari favorit")
                                             } else {
                                                 val ent = FavoriteEntity(
                                                     id = item.id ?: "",
                                                     name = item.name ?: "",
                                                     category = item.category ?: "",
-                                                    thumbnail = item.thumbnail ?: ""
+                                                    thumbnail = item.thumbnail ?: "",
+                                                    price = item.prices?.first()?.get("price") ?: 0L
                                                 )
                                                 viewModel.insertFavorite(ent)
                                                 viewModel.favorite.add(ent)
+                                                showSnackbar("Berhasil ditambahkan ke favorit")
                                             }
                                         },
                                         colors = IconButtonDefaults.filledIconButtonColors(

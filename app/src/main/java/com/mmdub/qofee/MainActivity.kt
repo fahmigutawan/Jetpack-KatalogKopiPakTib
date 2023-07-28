@@ -7,10 +7,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarResult
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +29,10 @@ import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @SuppressLint(
+        "UnusedMaterial3ScaffoldPaddingParameter",
+        "UnusedMaterialScaffoldPaddingParameter"
+    )
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +40,41 @@ class MainActivity : ComponentActivity() {
             KatalogKopiPakTibTheme {
                 val mainViewModel = viewModel<MainViewModel>()
                 val navController = rememberNavController()
+                val showSnackbar: (message: String) -> Unit = { message ->
+                    mainViewModel.snackbarMessage.value = message
+                    mainViewModel.snackbarActive.value = true
+                }
+                val scaffoldState = rememberScaffoldState()
 
-                navController.addOnDestinationChangedListener{ _, route, _ ->
+                if (mainViewModel.snackbarActive.value) {
+                    LaunchedEffect(key1 = true) {
+                        val resetSnackbarState = {
+                            mainViewModel.snackbarMessage.value = ""
+                            mainViewModel.snackbarActive.value = false
+                        }
+                        val snackbarData = scaffoldState.snackbarHostState.showSnackbar(
+                            message = mainViewModel.snackbarMessage.value,
+                            actionLabel = "Tutup",
+                            duration = SnackbarDuration.Short
+                        )
+
+                        when (snackbarData) {
+                            SnackbarResult.Dismissed -> {
+                                resetSnackbarState()
+                            }
+
+                            SnackbarResult.ActionPerformed -> {
+                                scaffoldState.snackbarHostState.currentSnackbarData?.performAction()
+                                resetSnackbarState()
+                            }
+                        }
+                    }
+                }
+
+                navController.addOnDestinationChangedListener { _, route, _ ->
                     route.route?.let {
                         mainViewModel.currentRoute.value = it
-                        when(it){
+                        when (it) {
                             NavRoutes.HOME_SCREEN.name -> {
                                 mainViewModel.showNavbar.value = true
                             }
@@ -65,7 +104,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         bottomBar = {
-                            if(mainViewModel.showNavbar.value){
+                            if (mainViewModel.showNavbar.value) {
                                 Navbar(
                                     onItemClicked = { route ->
                                         navController.navigate(route)
@@ -73,13 +112,19 @@ class MainActivity : ComponentActivity() {
                                     currentRoute = mainViewModel.currentRoute.value
                                 )
                             }
-                        }
+                        },
+                        snackbarHost = {
+                            SnackbarHost(hostState = it){
+                                Snackbar(snackbarData = it)
+                            }
+                        },
+                        scaffoldState = scaffoldState
                     ) {
                         MainNavHost(
                             modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
                             navController = navController,
                             mainViewModel = mainViewModel,
-                            showSnackbar =
+                            showSnackbar = showSnackbar
                         )
                     }
                 }
@@ -89,4 +134,4 @@ class MainActivity : ComponentActivity() {
 }
 
 @HiltAndroidApp
-class MainApplication:Application()
+class MainApplication : Application()

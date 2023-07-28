@@ -13,4 +13,6 @@ class MainViewModel @Inject constructor(
 ):ViewModel() {
     val showNavbar = mutableStateOf(false)
     val currentRoute = mutableStateOf(NavRoutes.SPLASH_SCREEN.name)
+    val snackbarMessage = mutableStateOf("")
+    val snackbarActive = mutableStateOf(false)
 }
