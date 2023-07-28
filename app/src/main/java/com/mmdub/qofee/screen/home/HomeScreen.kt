@@ -3,6 +3,7 @@ package com.mmdub.qofee.screen.home
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
@@ -32,7 +33,9 @@ import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,17 +75,13 @@ import com.mmdub.qofee.ui.theme.AppColor
 import com.mmdub.qofee.util.NavRoutes
 import com.mmdub.qofee.viewmodel.home.HomeViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val scrWidth = LocalConfiguration.current.screenWidthDp
     val categoryState = viewModel.categoryState.collectAsState()
     val bannerUrls = viewModel.bannerUrls.collectAsState()
-    val defaultCategory = CategoryItem(
-        id = "Semua",
-        word = "Semua"
-    )
     val gridState = rememberLazyGridState()
     val shouldLoadNextItem = remember {
         derivedStateOf {
@@ -98,64 +97,15 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
-    LaunchedEffect(
-        key1 = gridState
-            .layoutInfo
-            .visibleItemsInfo
-            .lastOrNull()
-            ?.index
-    ) {
-        Log.e(
-            "STATE", (
-                    gridState
-                        .layoutInfo
-                        .visibleItemsInfo
-                        .lastOrNull()
-                        ?.index?.minus(2) == viewModel.coffeeItems.size - 1
-                    ).toString()
-        )
-        Log.e("STATE 2", viewModel.endOfPage.value.toString())
-    }
-
-    LaunchedEffect(key1 = categoryState.value) {
-        if (categoryState.value is Resource.Success) {
-            categoryState.value.data?.let {
-                if (it.isNotEmpty()) {
-                    viewModel.categoryPicked.value = defaultCategory
-                }
-            }
-        }
-    }
-
     if (viewModel.shouldLoadFirstItem.value) {
-        when (viewModel.categoryPicked.value?.word) {
-            "Semua" -> {
-                LaunchedEffect(key1 = true) {
-                    viewModel.loadAllFirstCoffee()
-                }
-            }
-
-            else -> {
-                LaunchedEffect(key1 = true) {
-                    viewModel.loadFirstCoffeeByCategoryId()
-                }
-            }
+        LaunchedEffect(key1 = true) {
+            viewModel.loadFirstCoffee()
         }
     }
 
     if (shouldLoadNextItem.value && !viewModel.endOfPage.value) {
-        when (viewModel.categoryPicked.value?.word) {
-            "Semua" -> {
-                LaunchedEffect(key1 = true) {
-                    viewModel.loadAllNextCoffee()
-                }
-            }
-
-            else -> {
-                LaunchedEffect(key1 = true) {
-                    viewModel.loadNextCoffeeByCategoryId()
-                }
-            }
+        LaunchedEffect(key1 = true) {
+            viewModel.loadNextCoffee()
         }
     }
 
@@ -194,39 +144,66 @@ fun HomeScreen(navController: NavController) {
                     )
                 }
 
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    value = viewModel.searchState.value,
-                    onValueChange = {
-                        viewModel.searchState.value = it
-                    },
-                    placeholder = {
-                        Text(text = "Cari produk kopi...")
-                    },
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "")
-                    },
-                    trailingIcon = {
-                        FilledIconButton(
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary
-                            ),
-                            onClick = {
-                                if (viewModel.searchState.value.isNotEmpty()) {
-                                    navController.navigate("${NavRoutes.SEARCH_SCREEN.name}/${viewModel.searchState.value}")
-                                }
-                            },
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Icon(imageVector = Icons.Default.NavigateNext, contentDescription = "")
+                ExposedDropdownMenuBox(
+                    expanded = viewModel.showSellerDropdown.value,
+                    onExpandedChange = {
+                        viewModel.showSellerDropdown.value = it
+                    }
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier.clickable {
+                            viewModel.showSellerDropdown.value = !viewModel.showSellerDropdown.value
+                        },
+                        value = viewModel.pickedSeller.value?.name ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = {
+                            Text(text = "Penjual")
                         }
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = MaterialTheme.colorScheme.background
                     )
-                )
+
+                    ExposedDropdownMenu(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                        expanded = viewModel.showSellerDropdown.value,
+                        onDismissRequest = { viewModel.showSellerDropdown.value = false }
+                    ) {
+                        DropdownMenuItem(text = { Text(text = "CLICK ME") }, onClick = { /*TODO*/ })
+                    }
+                }
+
+//                OutlinedTextField(
+//                    modifier = Modifier
+//                        .fillMaxWidth(),
+//                    value = viewModel.searchState.value,
+//                    onValueChange = {
+//                        viewModel.searchState.value = it
+//                    },
+//                    placeholder = {
+//                        Text(text = "Cari produk kopi...")
+//                    },
+//                    leadingIcon = {
+//                        Icon(imageVector = Icons.Default.Search, contentDescription = "")
+//                    },
+//                    trailingIcon = {
+//                        FilledIconButton(
+//                            colors = IconButtonDefaults.filledIconButtonColors(
+//                                containerColor = MaterialTheme.colorScheme.secondary
+//                            ),
+//                            onClick = {
+//                                if (viewModel.searchState.value.isNotEmpty()) {
+//                                    navController.navigate("${NavRoutes.SEARCH_SCREEN.name}/${viewModel.searchState.value}")
+//                                }
+//                            },
+//                            shape = RoundedCornerShape(12.dp)
+//                        ) {
+//                            Icon(imageVector = Icons.Default.NavigateNext, contentDescription = "")
+//                        }
+//                    },
+//                    shape = RoundedCornerShape(12.dp),
+//                    colors = TextFieldDefaults.outlinedTextFieldColors(
+//                        textColor = MaterialTheme.colorScheme.background
+//                    )
+//                )
 
                 when (bannerUrls.value) {
                     is Resource.Error -> {/*TODO*/
@@ -296,12 +273,13 @@ fun HomeScreen(navController: NavController) {
                         categoryState.value.data?.let {
                             CategoryItem(
                                 word = "Semua",
-                                picked = viewModel.categoryPicked.value == defaultCategory,
+                                picked = viewModel.categoryPicked.value == null,
                                 onClick = {
-                                    if (viewModel.categoryPicked.value != defaultCategory) {
+                                    if (viewModel.categoryPicked.value != null) {
                                         viewModel.coffeeItems.clear()
-                                        viewModel.categoryPicked.value = defaultCategory
+                                        viewModel.categoryPicked.value = null
                                         viewModel.shouldLoadFirstItem.value = true
+                                        viewModel.endOfPage.value = false
                                     }
                                 }
                             )
@@ -311,11 +289,10 @@ fun HomeScreen(navController: NavController) {
                                         word = itemNotNull.word ?: "",
                                         picked = viewModel.categoryPicked.value == itemNotNull,
                                         onClick = {
-                                            if (viewModel.categoryPicked.value != itemNotNull) {
-                                                viewModel.coffeeItems.clear()
-                                                viewModel.categoryPicked.value = itemNotNull
-                                                viewModel.shouldLoadFirstItem.value = true
-                                            }
+                                            viewModel.coffeeItems.clear()
+                                            viewModel.categoryPicked.value = itemNotNull
+                                            viewModel.shouldLoadFirstItem.value = true
+                                            viewModel.endOfPage.value = false
                                         }
                                     )
                                 }

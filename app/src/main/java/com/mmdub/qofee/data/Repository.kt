@@ -10,19 +10,17 @@ class Repository @Inject constructor(
 ) {
     fun getAllCategory() = firebaseSource.getAllCategory()
 
-    fun getFirstAllCoffee() = firebaseSource.getFirstAllCoffee()
+    fun getFirstCoffee(uid: String = "", category_id: String = "") =
+        firebaseSource.getFirstCoffee(uid, category_id)
 
-    fun getNextAllCoffee(lastId: String) = firebaseSource.getNextAllCoffee(lastId)
-
-    fun getFirstCoffeeByCategoryId(categoryId: String) =
-        firebaseSource.getFirstCoffeeByCategoryId(categoryId)
-
-    fun getNextCoffeeByCategoryId(lastId: String, categoryId: String) =
-        firebaseSource.getNextCoffeeByCategory(lastId, categoryId)
+    fun getNextCoffee(lastId: String, uid: String = "", category_id: String = "") =
+        firebaseSource.getNextCoffee(lastId, uid, category_id)
 
     fun getCoffeeByCoffeeId(coffeeId: String) = firebaseSource.getCoffeeByCoffeeId(coffeeId)
 
     fun getAllBannerUrl() = firebaseSource.getAllBannerUrl()
 
-    fun getSellerDetail(uid:String) = firebaseSource.getSellerDetail(uid)
+    fun getSellerDetail(uid: String) = firebaseSource.getSellerDetail(uid)
+
+    fun getAllSeller() = firebaseSource.getAllSeller()
 }
