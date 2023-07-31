@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.mmdub.qofee.screen.coffee_detail.CoffeeDetailScreen
 import com.mmdub.qofee.screen.favorite.FavoriteScreen
 import com.mmdub.qofee.screen.home.HomeScreen
+import com.mmdub.qofee.screen.profile.AboutScreen
 import com.mmdub.qofee.screen.profile.ProfileScreen
 import com.mmdub.qofee.screen.search.SearchScreen
 import com.mmdub.qofee.screen.splash.SplashScreen
@@ -78,6 +79,12 @@ fun MainNavHost(
                 coffeeId = id,
                 showSnackbar = showSnackbar
             )
+        }
+
+        composable(
+            route = NavRoutes.ABOUT_SCREEN.name
+        ){
+            AboutScreen(navController = navController)
         }
     }
 }

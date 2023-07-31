@@ -1,6 +1,8 @@
 package com.mmdub.qofee.screen.profile
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -26,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mmdub.qofee.util.NavRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -35,6 +39,8 @@ import androidx.navigation.NavController
 fun ProfileScreen(
     navController: NavController
 ) {
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -66,7 +72,14 @@ fun ProfileScreen(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(color = Color.Black),
                         onClick = {
-
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(
+                                        "https://linkdy.me/wa-admin"
+                                    )
+                                )
+                            )
                         }
                     )
                 ) {
@@ -103,7 +116,7 @@ fun ProfileScreen(
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(color = Color.Black),
                         onClick = {
-
+                            navController.navigate(NavRoutes.ABOUT_SCREEN.name)
                         }
                     )
                 ) {

@@ -7,5 +7,6 @@ enum class NavRoutes {
     FAVORITE_SCREEN,
     PROFILE_SCREEN,
     SEARCH_SCREEN,
-    COFFEE_DETAIL
+    COFFEE_DETAIL,
+    ABOUT_SCREEN
 }
