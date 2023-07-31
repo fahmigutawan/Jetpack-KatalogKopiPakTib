@@ -20,14 +20,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -60,7 +63,7 @@ import com.mmdub.qofee.viewmodel.coffee_detail.CoffeeDetailViewModel
 fun CoffeeDetailScreen(
     navController: NavController,
     coffeeId: String,
-    showSnackbar:(String) -> Unit
+    showSnackbar: (String) -> Unit
 ) {
     val viewModel = hiltViewModel<CoffeeDetailViewModel>()
     val coffeeItem = viewModel.coffeeItem.collectAsState()
@@ -154,12 +157,31 @@ fun CoffeeDetailScreen(
                     }
                 }
             }
+        },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = "Detail Kopi")
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = "")
+                    }
+                }
+            )
         }
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                .padding(
+                    top = it.calculateTopPadding() + 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = it.calculateBottomPadding() + 16.dp
+                ),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             when (coffeeItem.value) {
@@ -197,6 +219,11 @@ fun CoffeeDetailScreen(
                                 Text(
                                     text = item.name ?: "",
                                     style = MaterialTheme.typography.headlineMedium
+                                )
+                                Text(
+                                    text = item.seller ?: "",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -238,7 +265,9 @@ fun CoffeeDetailScreen(
                                                     name = item.name ?: "",
                                                     category = item.category ?: "",
                                                     thumbnail = item.thumbnail ?: "",
-                                                    price = item.prices?.first()?.get("price") ?: 0L
+                                                    price = item.prices?.first()?.get("price")
+                                                        ?: 0L,
+                                                    seller = item.seller ?: ""
                                                 )
                                                 viewModel.insertFavorite(ent)
                                                 viewModel.favorite.add(ent)

@@ -155,7 +155,7 @@ fun HomeScreen(navController: NavController) {
                         OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            value = viewModel.pickedSeller.value?.name ?: "",
+                            value = viewModel.pickedSellerString.value,
                             onValueChange = {},
                             readOnly = true,
                             label = {
@@ -189,6 +189,17 @@ fun HomeScreen(navController: NavController) {
                             viewModel.showSellerDropdown.value = false
                         }
                     ) {
+                        DropdownMenuItem(
+                            text = { Text("Semua") },
+                            onClick = {
+                                viewModel.pickedSellerString.value = "Semua"
+                                viewModel.coffeeItems.clear()
+                                viewModel.pickedSeller.value = null
+                                viewModel.showSellerDropdown.value = false
+                                viewModel.shouldLoadFirstItem.value = true
+                                viewModel.endOfPage.value = false
+                            },
+                        )
                         if (sellerState.value is Resource.Success) {
                             sellerState.value.data?.let {
                                 it.filterNotNull().forEach { item ->
@@ -196,6 +207,7 @@ fun HomeScreen(navController: NavController) {
                                         text = { Text(text = item.name ?: "...") },
                                         onClick = {
                                             viewModel.coffeeItems.clear()
+                                            viewModel.pickedSellerString.value = item.name ?: "..."
                                             viewModel.pickedSeller.value = item
                                             viewModel.showSellerDropdown.value = false
                                             viewModel.shouldLoadFirstItem.value = true
@@ -248,7 +260,9 @@ fun HomeScreen(navController: NavController) {
                         ) {
                             HorizontalPagerIndicator(
                                 pagerState = state,
-                                pageCount = bannerUrls.value.data?.size ?: 0
+                                pageCount = bannerUrls.value.data?.size ?: 0,
+                                activeColor = MaterialTheme.colorScheme.inverseOnSurface,
+                                inactiveColor = MaterialTheme.colorScheme.outline
                             )
                         }
                     }
@@ -311,6 +325,7 @@ fun HomeScreen(navController: NavController) {
                 thumbnailUrl = it.thumbnail ?: "",
                 name = it.name ?: "",
                 category = it.category ?: "",
+                seller = it.seller ?: "",
                 price = it.prices?.getOrNull(0)?.get("price")?.toInt() ?: 0,
                 onClick = {
                     navController.navigate("${NavRoutes.COFFEE_DETAIL}/${it.id}")

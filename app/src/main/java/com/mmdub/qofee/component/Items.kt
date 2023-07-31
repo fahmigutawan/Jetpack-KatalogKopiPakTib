@@ -66,6 +66,7 @@ fun CoffeeItem(
     thumbnailUrl: String,
     name: String,
     category: String,
+    seller:String,
     price: Int,
     onClick: () -> Unit
 ) {
@@ -123,6 +124,16 @@ fun CoffeeItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                if(seller.isNotEmpty()){
+                    Text(
+                        text = seller,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Text(
                     text = "Rp $price",

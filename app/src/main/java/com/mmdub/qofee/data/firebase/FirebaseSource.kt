@@ -71,21 +71,29 @@ class FirebaseSource @Inject constructor(
                             .collection("category")
                             .document(doc.get("category_id").toString())
                             .addSnapshotListener { category, errorCategory ->
-                                tmp.add(
-                                    CoffeeItem(
-                                        id = doc.get("id").toString(),
-                                        name = doc.get("name").toString(),
-                                        description = doc.get("description").toString(),
-                                        category = category?.get("word").toString(),
-                                        thumbnail = doc.get("thumbnail").toString(),
-                                        prices = doc.get("prices") as List<Map<String, Long>>,
-                                        admin_uid = doc.get("admin_uid").toString()
-                                    )
-                                )
+                                firestore
+                                    .collection("seller")
+                                    .document(doc.get("admin_uid").toString())
+                                    .addSnapshotListener { seller, errorSeller ->
+                                        seller?.let { sellerNotNull ->
+                                            tmp.add(
+                                                CoffeeItem(
+                                                    id = doc.get("id").toString(),
+                                                    name = doc.get("name").toString(),
+                                                    description = doc.get("description").toString(),
+                                                    category = category?.get("word").toString(),
+                                                    thumbnail = doc.get("thumbnail").toString(),
+                                                    seller = sellerNotNull.get("name").toString(),
+                                                    prices = doc.get("prices") as List<Map<String, Long>>,
+                                                    admin_uid = doc.get("admin_uid").toString()
+                                                )
+                                            )
 
-                                if (tmp.size == it.documents.size) {
-                                    trySend(Resource.Success(tmp))
-                                }
+                                            if (tmp.size == it.documents.size) {
+                                                trySend(Resource.Success(tmp))
+                                            }
+                                        }
+                                    }
                             }
                     }
                 }
@@ -137,21 +145,34 @@ class FirebaseSource @Inject constructor(
                                     .collection("category")
                                     .document(doc.get("category_id").toString())
                                     .addSnapshotListener { category, errorCategory ->
-                                        tmp.add(
-                                            CoffeeItem(
-                                                id = doc.get("id").toString(),
-                                                name = doc.get("name").toString(),
-                                                description = doc.get("description").toString(),
-                                                category = category?.get("word").toString(),
-                                                thumbnail = doc.get("thumbnail").toString(),
-                                                prices = doc.get("prices") as List<Map<String, Long>>,
-                                                admin_uid = doc.get("admin_uid").toString()
-                                            )
-                                        )
+                                        firestore
+                                            .collection("seller")
+                                            .document(doc.get("admin_uid").toString())
+                                            .addSnapshotListener { seller, errorSeller ->
+                                                seller?.let { sellerNotNull ->
+                                                    tmp.add(
+                                                        CoffeeItem(
+                                                            id = doc.get("id").toString(),
+                                                            name = doc.get("name").toString(),
+                                                            description = doc.get("description")
+                                                                .toString(),
+                                                            category = category?.get("word")
+                                                                .toString(),
+                                                            thumbnail = doc.get("thumbnail")
+                                                                .toString(),
+                                                            seller = sellerNotNull.get("name")
+                                                                .toString(),
+                                                            prices = doc.get("prices") as List<Map<String, Long>>,
+                                                            admin_uid = doc.get("admin_uid")
+                                                                .toString()
+                                                        )
+                                                    )
 
-                                        if (tmp.size == it.documents.size) {
-                                            trySend(Resource.Success(tmp))
-                                        }
+                                                    if (tmp.size == it.documents.size) {
+                                                        trySend(Resource.Success(tmp))
+                                                    }
+                                                }
+                                            }
                                     }
                             }
                         }
@@ -186,19 +207,32 @@ class FirebaseSource @Inject constructor(
 
                             value2?.let { doc2 ->
 
-                                trySend(
-                                    Resource.Success(
-                                        CoffeeItem(
-                                            id = doc.get("id").toString(),
-                                            name = doc.get("name").toString(),
-                                            description = doc.get("description").toString(),
-                                            category = doc2.get("word").toString(),
-                                            thumbnail = doc.get("thumbnail").toString(),
-                                            prices = doc.get("prices") as List<Map<String, Long>>,
-                                            admin_uid = doc.get("admin_uid").toString()
-                                        )
-                                    )
-                                )
+                                firestore
+                                    .collection("seller")
+                                    .document(doc.get("admin_uid").toString())
+                                    .addSnapshotListener { valueSeller, errorSeller ->
+                                        if(errorSeller != null){
+                                            trySend(Resource.Error(errorSeller.message ?: "Error"))
+                                            return@addSnapshotListener
+                                        }
+
+                                        valueSeller?.let {sellerNotNull ->
+                                            trySend(
+                                                Resource.Success(
+                                                    CoffeeItem(
+                                                        id = doc.get("id").toString(),
+                                                        name = doc.get("name").toString(),
+                                                        description = doc.get("description").toString(),
+                                                        category = doc2.get("word").toString(),
+                                                        thumbnail = doc.get("thumbnail").toString(),
+                                                        seller = sellerNotNull.get("name").toString(),
+                                                        prices = doc.get("prices") as List<Map<String, Long>>,
+                                                        admin_uid = doc.get("admin_uid").toString()
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    }
                             }
                         }
                 }

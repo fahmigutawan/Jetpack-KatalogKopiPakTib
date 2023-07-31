@@ -27,6 +27,7 @@ class HomeViewModel @Inject constructor(
     val categoryPicked = mutableStateOf<CategoryItem?>(null)
     val showSellerDropdown = mutableStateOf(false)
     val pickedSeller = mutableStateOf<SellerResponse?>(null)
+    val pickedSellerString = mutableStateOf("Semua")
     val shouldLoadFirstItem = mutableStateOf(true)
     val endOfPage = mutableStateOf(false)
     val pagingState = mutableStateOf(PagingState.FirstLoad)

@@ -28,6 +28,7 @@ fun FavoriteScreen(
                 name = item.name ?: "",
                 category = item.category ?: "",
                 price = (item.price ?: 0L).toInt(),
+                seller = item.seller ?: "",
                 onClick = {
                     navController.navigate("${NavRoutes.COFFEE_DETAIL}/${item.id}")
                 }

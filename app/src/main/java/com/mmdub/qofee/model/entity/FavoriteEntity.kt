@@ -9,5 +9,6 @@ data class FavoriteEntity(
     val name:String?,
     val category:String?,
     val thumbnail:String?,
-    val price:Long?
+    val price:Long?,
+    val seller:String?
 )

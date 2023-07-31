@@ -7,5 +7,6 @@ data class CoffeeItem(
     val description:String? = "",
     val category:String? = "",
     val thumbnail:String? = "",
+    val seller:String? = "",
     val prices:List<Map<String, Long>>? = listOf()
 )
