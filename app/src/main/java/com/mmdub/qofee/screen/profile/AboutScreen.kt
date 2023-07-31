@@ -53,7 +53,7 @@ fun AboutScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Qofee (for Admin) v1.0.0",
+                    text = "Qofee v1.0.0",
                     style = MaterialTheme.typography.titleMedium
                 )
 
